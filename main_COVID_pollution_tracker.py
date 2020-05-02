@@ -3,7 +3,7 @@
 """
 Created on Fri May  1 19:09:48 2020
 
-@author: Aman 
+@author: Aman
 """
 from tkinter import *
 import numpy as np
@@ -18,14 +18,11 @@ from tkFileDialog import askopenfilename
 from tkinter.ttk import Separator, Style
 import MajorCities
 import requests
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
 
 
 base_url = "https://api.waqi.info"
 
-# read secret token from file containing the token as a single string
-# you need to create this file if you want to reproduce this analysis
 token = open('waqitoken.txt').read()
 
 
@@ -37,13 +34,9 @@ class MyWindow(tk.Tk):
         
         tk.Tk.__init__(self)
         
-        
+        #Canvas Design
         self.title("COVID Air Polluton Tracker - Team Transcendentals")
-        
-        #Entry
-        #self.e1=tk.Entry(self)
-        #self.e1.grid(row=3, column=6, sticky=tk.EW)
-        #self.e1.insert(0, 'Taiping')
+
         
         self.grid_columnconfigure(0, weight=1, uniform='a')
         self.grid_columnconfigure(2, weight=1, uniform='a')
@@ -64,7 +57,7 @@ class MyWindow(tk.Tk):
         
         self.title=tk.Label(self, text='Get Live Data')
         self.title.config(font=('times new roman', 20))
-        self.title.grid(row=3, column=4, columnspan=1, sticky=tk.EW)
+        self.title.grid(row=2, column=4, columnspan=1, rowspan=2, sticky=tk.EW)
 
         self.title=tk.Label(self, text='INSTRUCTIONS\n 1. Click on Load Data to upload data file as per format in AQICN database.\n2. Use City Name from the dropdown and click on Plot Button.\n 3. Use the 2nd Plot to add the data for comparison.\n 4. Use Clear Button to clear the comparison plot.\n 5. See realtime AQI data for major cities from the dropdown.')
         self.title.config(font=('times new roman', 12, 'bold'))
@@ -74,9 +67,10 @@ class MyWindow(tk.Tk):
         self.title.config(font=('times new roman', 12))
         self.title.grid(row=12, column=0, columnspan=5, sticky=tk.EW)
         
-        self.title=tk.Label(self, text='Good: 0-50\n Satisfactory: 51-100\n Moderately Polluted: 101-200\n Poor: 201-300\n Very Poor: 301-400\n Severe: 410-500')
+        self.title=tk.Label(self, text='Good: 0-50\n Satisfactory: 51-100\n Moderately Polluted: 101-200\n Poor: 201-300\n Very Poor: 301-400\n Severe: 401-500')
         self.title.config(font=('times new roman', 18))
-        self.title.grid(row=8, column=4, columnspan=1, sticky=tk.NSEW)
+        self.title.grid(row=8, column=4, columnspan=1, rowspan=1, sticky=tk.NSEW)
+        
         
         #Separators
         self.sep = Separator(self, orient="horizontal")
@@ -85,9 +79,7 @@ class MyWindow(tk.Tk):
         self.sty.configure("TSeparator", background="red")
         
         self.sep = Separator(self, orient="horizontal")
-        self.sep.grid(column=0, row=7, columnspan=5, sticky=tk.EW)
-        self.sty = Style(self)
-        self.sty.configure("TSeparator", background="red")
+        self.sep.grid(column=4, row=7, columnspan=1, sticky=tk.S)
         
         self.sep = Separator(self, orient="horizontal")
         self.sep.grid(column=0, row=9, columnspan=5, sticky=tk.EW)
@@ -105,14 +97,14 @@ class MyWindow(tk.Tk):
         self.sty.configure("TSeparator", background="red")
         
         self.sep = Separator(self, orient="vertical")
-        self.sep.grid(column=3, row=3, rowspan=7, sticky=tk.NS)
+        self.sep.grid(column=3, row=2, rowspan=7, sticky=tk.NS)
         self.sty = Style(self)
         self.sty.configure("TSeparator", background="red")
 
 
         #Buttons
         self.button1 = tk.Button(text='LOAD DATA', command=self.load)
-        self.button1.grid(row=2, column=0, columnspan=5, sticky=tk.NSEW)
+        self.button1.grid(row=2, column=0, columnspan=3, sticky=tk.NSEW)
         
         self.button3 = tk.Button(text='PLOT', command=self.myplot)
         self.button3.grid(row=4, column=0, rowspan=1, sticky=tk.NSEW)
@@ -131,16 +123,11 @@ class MyWindow(tk.Tk):
         fig1, (self.ax2) = plt.subplots(nrows=1, ncols=1, sharey = False)
 
         self.canvas = FigureCanvasTkAgg(fig, self)
-        self.canvas.get_tk_widget().grid(row=6, column=0, rowspan=3, columnspan=1, sticky=tk.NSEW)
+        self.canvas.get_tk_widget().grid(row=6, column=0, rowspan=2, columnspan=1, sticky=tk.NSEW)
         
         self.canvas1 = FigureCanvasTkAgg(fig1, self)
-        self.canvas1.get_tk_widget().grid(row=6, column=2, rowspan=3, columnspan=1, sticky=tk.NSEW)
-        '''
-        #Toolbar
-        self.toolbarFrame = tk.
-        toolbarFrame.grid(row=22,column=4)
-        toolbar = NavigationToolbar2TkAgg(canvas, toolbarFrame)
-        '''
+        self.canvas1.get_tk_widget().grid(row=6, column=2, rowspan=2, columnspan=1, sticky=tk.NSEW)
+
         
         self.livedata()
 
@@ -177,13 +164,17 @@ class MyWindow(tk.Tk):
 
         df2 = df2[['x','y']].groupby('x').sum()
         
-        b=df2.plot(kind='line', legend=True, ax=self.ax1, color='r',marker='o', fontsize=10)
+        self.ax1.bar(x,y, color = 'lightsteelblue')
+        
+        #b=df2.plot(kind='line', legend=True, ax=self.ax1, color='r',marker='o', fontsize=10)
         self.ax1.axvspan('12/15/2019', max(x), color='red', alpha=0.2)
         
-        self. ax1.legend(['Cities']) 
+        #self. ax1.legend(['Cities']) 
         self.ax1.set_xlabel('Time')
-        self.ax1.set_ylabel('Parameter')
-        self.ax1.set_title('Pollutant Parameter Vs. Time')
+        self.ax1.set_ylabel('AQI')
+        self.ax1.set_title('AQI vs. Time')
+        
+        self.calculateavg()
         
         self.ax1.plot()       
         
@@ -207,10 +198,10 @@ class MyWindow(tk.Tk):
         df2 = df2[['x','y']].groupby('x').sum()
         b=df2.plot(kind='line', legend=True, ax=self.ax2,marker='o', fontsize=10)
 
-        self.ax2.legend(['Cities']) 
+        #self.ax2.legend(['Cities']) 
         self.ax2.set_xlabel('Time')
-        self.ax2.set_ylabel('Parameter')
-        self.ax2.set_title('Pollutant Parameter Vs. Time')
+        self.ax2.set_ylabel('AQI')
+        self.ax2.set_title('AQI Vs. Time')
         
         self.canvas1.draw() 
         
@@ -243,6 +234,42 @@ class MyWindow(tk.Tk):
     def clearplot(self):
         self.ax2.cla()
         self.canvas1.draw() 
+        
+    def calculateavg(self):
+        city = self.variable.get()        
+        x=self.df1.loc[self.df1['City'] == city, 'Date']
+        y=self.df1.loc[self.df1['City'] == city, 'median']
+        x = x.values
+        y = y.values
+        
+        data3 = {'x': x,
+             'y': y}
+        
+        self.df3 = DataFrame(data3,columns=['x','y'])
+
+        bc=self.df3.loc[self.df3['x'] < '12/15/2019', 'y']
+        ac=self.df3.loc[self.df3['x'] > '12/15/2019', 'y']
+        
+        bcn=[]
+        acn=[]
+        for i in range(len(bc.values-1)):
+            if bc.values[i]>0:
+                bcn.append(bc.values[i])
+            
+        for i in range(len(ac.values-1)):
+            if ac.values[i]>0:
+                acn.append(ac.values[i])
+        
+        
+        avgy1=np.average(bcn)
+        avgy2=np.average(acn)
+        #print avgy1, avgy2
+        
+        self.title=tk.Label(self, text="Average Values\n\n Before Corona: " + str(round(avgy1))+"\n" "After Corona: " + str(round(avgy2))+"\n")
+        self.title.config(font=('times new roman', 18))
+        self.title.grid(row=8, column=0, columnspan=1, rowspan=1, sticky=tk.NSEW)
+        
+        
 
 if __name__ == '__main__':
     app = MyWindow()
